@@ -1,0 +1,114 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum Role {
+  ADMIN
+  MANAGER
+  MEMBER
+}
+
+enum WorkStatus {
+  BACKLOG
+  IN_PROGRESS
+  REVIEW
+  COMPLETED
+}
+
+enum Priority {
+  LOW
+  MEDIUM
+  HIGH
+  CRITICAL
+}
+
+enum ApprovalStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+enum RequestType {
+  EXPENSE
+  PROCUREMENT
+  TIME_OFF
+  POLICY_CHANGE
+}
+
+model Department {
+  id          String            @id @default(cuid())
+  name        String            @unique
+  budgetLimit Float             @default(10000)
+  users       User[]
+  workflows   Workflow[]
+  requests    ApprovalRequest[]
+  createdAt   DateTime          @default(now())
+}
+
+model User {
+  id            String            @id @default(cuid())
+  name          String
+  email         String            @unique
+  jobTitle      String
+  role          Role              @default(MEMBER)
+  departmentId  String
+  department    Department        @relation(fields: [departmentId], references: [id])
+  assignedTasks Workflow[]        @relation("Assignee")
+  requests      ApprovalRequest[] @relation("Requester")
+  announcements Announcement[]
+  auditLogs     AuditLog[]
+  createdAt     DateTime          @default(now())
+}
+
+model Workflow {
+  id           String     @id @default(cuid())
+  title        String
+  description  String?
+  status       WorkStatus @default(BACKLOG)
+  priority     Priority   @default(MEDIUM)
+  dueDate      DateTime?
+  departmentId String
+  department   Department @relation(fields: [departmentId], references: [id])
+  assigneeId   String?
+  assignee     User?      @relation("Assignee", fields: [assigneeId], references: [id])
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+}
+
+model ApprovalRequest {
+  id           String         @id @default(cuid())
+  title        String
+  type         RequestType
+  amount       Float          @default(0)
+  notes        String?
+  status       ApprovalStatus @default(PENDING)
+  requesterId  String
+  requester    User           @relation("Requester", fields: [requesterId], references: [id])
+  departmentId String
+  department   Department     @relation(fields: [departmentId], references: [id])
+  resolvedAt   DateTime?
+  createdAt    DateTime       @default(now())
+}
+
+model Announcement {
+  id        String   @id @default(cuid())
+  title     String
+  content   String
+  pinned    Boolean  @default(false)
+  authorId  String
+  author    User     @relation(fields: [authorId], references: [id])
+  createdAt DateTime @default(now())
+}
+
+model AuditLog {
+  id        String   @id @default(cuid())
+  action    String
+  details   String
+  userId    String?
+  user      User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+  createdAt DateTime @default(now())
+}
