@@ -1,16 +1,16 @@
-# OpsCore Workspace
+# OpsCore Workspace (`ops-command-hub`)
 
-**OpsCore** is a unified, role-based enterprise operations workspace designed to replace fragmented departmental spreadsheets and email approval chains with a single, auditable command center.
+**OpsCore** is a unified, role-based enterprise operations workspace built to replace fragmented spreadsheets and ad-hoc approval threads with a single operational hub, real-time budget visibility, and an immutable compliance ledger.
 
 ---
 
-## Key Capabilities
+## Key Features
 
-* **Server-Enforced Role-Based Access Control (RBAC):** Live session-based operator switching (`ADMIN`, `MANAGER`, `MEMBER`) enforced at the Next.js Server Action layer.
-* **Operational Workflow Engine:** Full task lifecycle tracking (`BACKLOG` → `IN_PROGRESS` → `REVIEW` → `COMPLETED`) with operator assignment, priority tiers, and URL-backed multi-criteria filtering and search.
-* **Department Budget Allocations & Approval Queue:** Real-time quarterly spend tracking with visual threshold indicators (`>75%` utilization alerts) and one-click sign-offs for expenses, procurement, time off, and policy changes.
-* **Company Broadcast Center:** Role-gated announcement composer for `ADMIN` and `MANAGER` operators with collapsible broadcast history.
-* **Immutable Audit Trail & Compliance Exports:** Automatic PostgreSQL logging of every state transition, role update, and financial sign-off, paired with one-click `.csv` ledger exports (`/api/exports`).
+* **Server-Enforced Role-Based Access Control (RBAC):** Switch active operators (`ADMIN`, `MANAGER`, `MEMBER`) via an HTTP-only session cookie (`opscore_active_user`) with authorization enforced directly in Next.js Server Actions.
+* **Operational Workflows & Filtering:** Create tasks, assign operators, advance statuses (`BACKLOG` → `IN_PROGRESS` → `REVIEW` → `COMPLETED`), and filter or search workflows with URL-synced state (`WorkflowFilterBar`).
+* **Department Budget Allocations & Approvals:** Track department budgets against approved spend with utilization progress bars, threshold highlights, and one-click sign-off requests.
+* **Company Broadcast Center:** Publish company-wide announcements (restricted to `ADMIN` and `MANAGER`) with collapsible broadcast history.
+* **Immutable Audit Trail & CSV Exports:** Record state changes, approvals, role updates, and broadcasts in PostgreSQL, with `.csv` export support via `/api/exports`.
 
 ---
 
@@ -18,7 +18,7 @@
 
 | Layer | Technology |
 | :--- | :--- |
-| **Framework** | Next.js 16 (App Router, Server Actions, Turbopack, Partial Prerendering) |
+| **Framework** | Next.js 16 (App Router, Server Actions, Turbopack) |
 | **Language** | TypeScript |
 | **Database & ORM** | PostgreSQL with Prisma 7 |
 | **Validation** | Zod |
@@ -26,16 +26,16 @@
 
 ---
 
-## Role Permission Matrix
+## RBAC Permission Matrix
 
-| Capability | `MEMBER` | `MANAGER` | `ADMIN` |
+| Action / Capability | `MEMBER` | `MANAGER` | `ADMIN` |
 | :--- | :---: | :---: | :---: |
 | Create & advance operational workflows | Yes | Yes | Yes |
 | Submit approval requests | Yes | Yes | Yes |
-| Export Audit Trail & Approval Ledger CSVs | Yes | Yes | Yes |
-| Approve or reject pending sign-off requests | — | Yes | Yes |
-| Publish company-wide broadcasts | — | Yes | Yes |
-| Onboard operators & modify user roles | — | — | Yes |
+| Export Audit Trail & Approval CSVs | Yes | Yes | Yes |
+| Approve or reject sign-off requests | — | Yes | Yes |
+| Publish company broadcasts | — | Yes | Yes |
+| Onboard operators & change user roles | — | — | Yes |
 
 ---
 
@@ -43,7 +43,7 @@
 
 ### 1. Prerequisites
 * Node.js 20+
-* PostgreSQL 15+ running locally or via Docker
+* PostgreSQL 15+ running locally or in a container
 
 ### 2. Install Dependencies
 ```bash
